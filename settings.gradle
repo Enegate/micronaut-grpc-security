@@ -1,0 +1,3 @@
+rootProject.name = "micronaut-grpc-security"
+
+enableFeaturePreview('STABLE_PUBLISHING')

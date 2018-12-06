@@ -1,0 +1,41 @@
+buildscript {
+    ext {
+        micronautGrpcServerVersion = "0.0.2"
+    }
+}
+
+plugins {
+    id "java"
+    id "groovy"
+    id "io.spring.dependency-management" version "1.0.6.RELEASE"
+    id "net.ltgt.apt-eclipse" version "0.19"
+    id "net.ltgt.apt-idea" version "0.19"
+}
+
+apply from: "publish.gradle"
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "io.micronaut:micronaut-bom:1.0.1"
+    }
+}
+
+dependencies {
+    annotationProcessor "io.micronaut:micronaut-inject-java"
+    testAnnotationProcessor "io.micronaut:micronaut-inject-groovy"
+
+    compileOnly "com.enegate:micronaut-grpc-server:$micronautGrpcServerVersion"
+
+    annotationProcessor "io.micronaut:micronaut-security"
+    compileOnly "io.micronaut:micronaut-security"
+
+    testCompile "org.codehaus.groovy:groovy-all:2.5.4"
+    testCompile "org.spockframework:spock-core:1.2-groovy-2.5"
+
+    runtime "ch.qos.logback:logback-classic:1.2.3"
+}

@@ -1,0 +1,99 @@
+apply plugin: "maven-publish"
+apply plugin: "signing"
+
+ext {
+    isLocalPublishing = {
+        gradle.taskGraph.allTasks.find { it.name == "publishToMavenLocal" } != null
+    }
+}
+
+gradle.taskGraph.whenReady { taskGraph ->
+    if (taskGraph.allTasks.any { it instanceof Sign }) {
+        def id = System.getenv("GPG_ID")
+        def password = System.getenv("GPG_PW")
+        def file = System.getenv("GPG_FILE")
+
+        allprojects {
+            ext."signing.keyId" = id
+            ext."signing.password" = password
+            ext."signing.secretKeyRingFile" = file
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier = 'javadoc'
+}
+
+publishing {
+    repositories {
+        maven {
+            credentials {
+                def stUser = System.getenv("SONATYPE_USERNAME")
+                def stPass = System.getenv("SONATYPE_PASSWORD")
+
+                username = stUser
+                password = stPass
+            }
+            if (project.version.endsWith("SNAPSHOT")) {
+                url "https://oss.sonatype.org/content/repositories/snapshots"
+            } else {
+                url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            }
+        }
+    }
+
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = project.groupId
+            artifactId = project.artifactId
+            version = project.version
+
+            from components.java
+            artifact sourcesJar {
+                classifier "sources"
+            }
+            artifact javadocJar {
+                classifier "javadoc"
+            }
+
+            pom {
+                name = project.groupId + ":" + project.artifactId
+                description = project.description
+                url = project.githubUrl + project.githubProject
+
+                scm {
+                    url = project.githubUrl + project.githubProject
+                    connection = "scm:git:" + project.githubUrl + project.githubProject + ".git"
+                    developerConnection = "scm:git:git@github.com:" + project.githubProject + ".git"
+                }
+
+                licenses {
+                    license {
+                        name = 'The Apache Software License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution = 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'schneidersteve'
+                        name = 'Steve Schneider'
+                    }
+                }
+            }
+        }
+    }
+}
+
+signing {
+    required { !isLocalPublishing() }
+    sign publishing.publications.mavenJava
+}
