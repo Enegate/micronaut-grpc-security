@@ -26,6 +26,7 @@ import io.micronaut.core.order.Ordered;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpHeaders;
 import io.micronaut.http.MutableHttpResponse;
+import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.filters.SecurityFilter;
 import io.reactivex.Flowable;
 import org.reactivestreams.Publisher;
@@ -33,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.Optional;
 
 /**
  * @author Steve Schneider
@@ -88,6 +90,13 @@ public class GrpcSecurityInterceptor implements ServerInterceptor, Ordered {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Security check successful for gRPC service {} with status code: {}", call.getMethodDescriptor().getFullMethodName(), Status.OK);
+        }
+
+        Optional<Authentication> optionalAuthentication = request.getAttribute(SecurityFilter.AUTHENTICATION, Authentication.class);
+        if (optionalAuthentication.isPresent()) {
+            Authentication authentication =  optionalAuthentication.get();
+            Context ctx = Context.current().withValue(GrpcSecurityContext.AUTHENTICATION_CTX_KEY, authentication);
+            return Contexts.interceptCall(ctx, call, metadata, next);
         }
 
         return next.startCall(call, metadata);

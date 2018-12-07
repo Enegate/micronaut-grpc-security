@@ -19,7 +19,7 @@ Artifacts are published to Maven Central.
 <dependency>
   <groupId>com.enegate</groupId>
   <artifactId>micronaut-grpc-security</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
 </dependency>
 ...
 ````
@@ -28,7 +28,7 @@ Artifacts are published to Maven Central.
 ````gradle
 dependencies {
   ...
-  compile 'com.enegate:micronaut-grpc-security:0.0.1'
+  compile 'com.enegate:micronaut-grpc-security:0.0.2'
   compile "io.micronaut:micronaut-security-jwt"
   ...
 }
