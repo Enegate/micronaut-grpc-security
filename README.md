@@ -1,6 +1,9 @@
-# Annotation based security support for [Micronaut enabled gRPC services](https://github.com/Enegate/micronaut-grpc-server)
+# Annotation based security support for ~~[Micronaut enabled gRPC services](https://github.com/Enegate/micronaut-grpc-server)~~
 
 [![Build Status](https://travis-ci.org/Enegate/micronaut-grpc-security.svg?branch=master)](https://travis-ci.org/Enegate/micronaut-grpc-security)
+
+
+WARNING: This solution does not work with [micronaut-grpc](https://github.com/micronaut-projects/micronaut-grpc) at the moment.
 
 This project is inspired by [Micronaut’s security capabilities](https://docs.micronaut.io/latest/guide/index.html#security).
 
